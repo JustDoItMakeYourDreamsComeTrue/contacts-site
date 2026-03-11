@@ -50,12 +50,12 @@ describe("ContactManager", () => {
 
     it("не позволяет сохранить пустое название группы при пакетном сохранении", () => {
         const manager = new ContactManager(new MemoryStorage());
-        const groups = manager.getGroups();
+        const group = manager.addGroup("Работа");
 
         expect(() =>
             manager.replaceGroups([
                 {
-                    id: groups[0].id,
+                    id: group.id,
                     name: "",
                 },
             ]),

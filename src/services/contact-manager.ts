@@ -16,9 +16,7 @@ export class ContactManager {
     constructor(storage: StorageService) {
         this.storage = storage;
         this.contacts = this.storage.read<Contact[]>(this.contactsKey, []);
-        this.groups = this.storage.read<Group[]>(this.groupsKey, [
-            { id: createId(), name: "Без группы" },
-        ]);
+        this.groups = this.storage.read<Group[]>(this.groupsKey, []);
     }
 
     public getContacts(): Contact[] {

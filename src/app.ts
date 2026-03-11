@@ -415,12 +415,8 @@ export class ContactsApp {
             .map((group) => ({ id: group.id, name: group.name }));
         this.dropdown.dataItems = groups;
 
-        if (contact) {
-            if (contact.groupId) {
-                this.dropdown.selectById(contact.groupId, false);
-            } else {
-                this.dropdown.clearSelection(false);
-            }
+        if (contact?.groupId) {
+            this.dropdown.selectById(contact.groupId, false);
         } else {
             this.dropdown.clearSelection(false);
         }
@@ -451,11 +447,6 @@ export class ContactsApp {
                 !groups.some((group) => group.id === contact.groupId),
         );
 
-        this.dropdown.dataItems = groups.map((group) => ({
-            id: group.id,
-            name: group.name,
-        }));
-
         // Рендерим группы с их контактами
         const groupsHtml = groups
             .map((group) => {
@@ -477,22 +468,7 @@ export class ContactsApp {
                             <span class="group-card__toggle" aria-hidden="true">⌄</span>
                         </button>
                         <ul class="group-card__list">
-                            ${groupContacts
-                                .map(
-                                    (contact) => `
-                                <li class="group-card__contact-row" data-contact-id="${contact.id}">
-                                    <p class="group-card__contact-name">${contact.name}</p>
-                                    <div class="group-card__right-side">
-                                        <p class="group-card__contact-phone">${contact.phone}</p>
-                                        <div class="group-card__actions">
-                                            <button class="group-card__action group-card__action--edit" type="button" data-contact-action="edit" data-contact-id="${contact.id}" aria-label="Изменить контакт"></button>
-                                            <button class="group-card__action group-card__action--delete" type="button" data-contact-action="delete" data-contact-id="${contact.id}" aria-label="Удалить контакт"></button>
-                                        </div>
-                                    </div>
-                                </li>
-                            `,
-                                )
-                                .join("")}
+                            ${groupContacts.map((c) => this.renderContactRow(c, "group")).join("")}
                         </ul>
                     </li>
                 `;
@@ -506,22 +482,7 @@ export class ContactsApp {
                     <li class="contacts__ungrouped">
                         <h2 class="contacts__ungrouped-title">Без группы</h2>
                         <ul class="contacts__ungrouped-list">
-                            ${ungroupedContacts
-                                .map(
-                                    (contact) => `
-                                <li class="contacts__ungrouped-contact" data-contact-id="${contact.id}">
-                                    <p class="contacts__ungrouped-contact-name">${contact.name}</p>
-                                    <div class="contacts__ungrouped-right-side">
-                                        <p class="contacts__ungrouped-contact-phone">${contact.phone}</p>
-                                        <div class="contacts__ungrouped-actions">
-                                            <button class="contacts__ungrouped-action contacts__ungrouped-action--edit" type="button" data-contact-action="edit" data-contact-id="${contact.id}" aria-label="Изменить контакт"></button>
-                                            <button class="contacts__ungrouped-action contacts__ungrouped-action--delete" type="button" data-contact-action="delete" data-contact-id="${contact.id}" aria-label="Удалить контакт"></button>
-                                        </div>
-                                    </div>
-                                </li>
-                            `,
-                                )
-                                .join("")}
+                            ${ungroupedContacts.map((c) => this.renderContactRow(c, "ungrouped")).join("")}
                         </ul>
                     </li>
                 `
@@ -533,6 +494,32 @@ export class ContactsApp {
             "contacts__empty--hidden",
             contacts.length > 0,
         );
+    }
+
+    private renderContactRow(
+        contact: Contact,
+        context: "group" | "ungrouped",
+    ): string {
+        const isGroup = context === "group";
+        const row = isGroup ? "group-card__contact-row" : "contacts__ungrouped-contact";
+        const name = isGroup ? "group-card__contact-name" : "contacts__ungrouped-contact-name";
+        const right = isGroup ? "group-card__right-side" : "contacts__ungrouped-right-side";
+        const phone = isGroup ? "group-card__contact-phone" : "contacts__ungrouped-contact-phone";
+        const actions = isGroup ? "group-card__actions" : "contacts__ungrouped-actions";
+        const actionBase = isGroup ? "group-card__action" : "contacts__ungrouped-action";
+
+        return `
+            <li class="${row}" data-contact-id="${contact.id}">
+                <p class="${name}">${contact.name}</p>
+                <div class="${right}">
+                    <p class="${phone}">${contact.phone}</p>
+                    <div class="${actions}">
+                        <button class="${actionBase} ${actionBase}--edit" type="button" data-contact-action="edit" data-contact-id="${contact.id}" aria-label="Изменить контакт"></button>
+                        <button class="${actionBase} ${actionBase}--delete" type="button" data-contact-action="delete" data-contact-id="${contact.id}" aria-label="Удалить контакт"></button>
+                    </div>
+                </div>
+            </li>
+        `;
     }
 
     private toggleGroup(groupId: string): void {
