@@ -456,14 +456,14 @@ export class ContactsApp {
             name: group.name,
         }));
 
-        // Render groups with their contacts
+        // Рендерим группы с их контактами
         const groupsHtml = groups
             .map((group) => {
                 const groupContacts = contacts.filter(
                     (contact) => contact.groupId === group.id,
                 );
 
-                // Don't render groups with no contacts
+                // Не рендерим группы без контактов
                 if (groupContacts.length === 0) {
                     return "";
                 }
@@ -499,7 +499,7 @@ export class ContactsApp {
             })
             .join("");
 
-        // Render ungrouped contacts separately
+        // Рендерим контакты без группы отдельно
         const ungroupedHtml =
             ungroupedContacts.length > 0
                 ? `
