@@ -36,5 +36,5 @@ npm run build
 ## GitHub Pages
 
 - Деплой через workflow: `/.github/workflows/deploy-pages.yml`.
-- Публикация из ветки `main` в окружение `github-pages`.
+- Публикация из ветки `master` в окружение `github-pages`.
 - Базовый путь Vite: `/contacts-site/`.
