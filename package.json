@@ -1,0 +1,22 @@
+{
+    "name": "contacts-site",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "test": "vitest run"
+    },
+    "devDependencies": {
+        "sass": "^1.97.3",
+        "typescript": "~5.9.3",
+        "vite": "^5.4.19",
+        "vitest": "^1.6.1"
+    },
+    "dependencies": {
+        "@fontsource/manrope": "^5.2.8",
+        "imask": "^7.6.1"
+    }
+}
