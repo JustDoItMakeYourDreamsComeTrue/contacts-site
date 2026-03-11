@@ -444,41 +444,29 @@ export class ContactsApp {
     private render(): void {
         const groups = this.manager.getGroups();
         const contacts = this.manager.getContacts();
-        const groupedCards = groups.map((group) => ({
-            id: group.id,
-            name: group.name,
-            contacts: contacts.filter(
-                (contact) => contact.groupId === group.id,
-            ),
-        }));
-        const groupedCardsWithContacts = groupedCards.filter(
-            (group) => group.contacts.length > 0,
-        );
+
         const ungroupedContacts = contacts.filter(
             (contact) =>
                 !contact.groupId ||
                 !groups.some((group) => group.id === contact.groupId),
         );
-        const groupsForRender =
-            ungroupedContacts.length > 0
-                ? [
-                      ...groupedCardsWithContacts,
-                      {
-                          id: "__ungrouped__",
-                          name: "Без группы",
-                          contacts: ungroupedContacts,
-                      },
-                  ]
-                : groupedCardsWithContacts;
 
         this.dropdown.dataItems = groups.map((group) => ({
             id: group.id,
             name: group.name,
         }));
 
-        this.contactsListElement.innerHTML = groupsForRender
+        // Render groups with their contacts
+        const groupsHtml = groups
             .map((group) => {
-                const groupContacts = group.contacts;
+                const groupContacts = contacts.filter(
+                    (contact) => contact.groupId === group.id,
+                );
+
+                // Don't render groups with no contacts
+                if (groupContacts.length === 0) {
+                    return "";
+                }
 
                 const isCollapsed = this.collapsedGroupIds.has(group.id);
 
@@ -489,11 +477,9 @@ export class ContactsApp {
                             <span class="group-card__toggle" aria-hidden="true">⌄</span>
                         </button>
                         <ul class="group-card__list">
-                            ${
-                                groupContacts.length > 0
-                                    ? groupContacts
-                                          .map(
-                                              (contact) => `
+                            ${groupContacts
+                                .map(
+                                    (contact) => `
                                 <li class="group-card__contact-row" data-contact-id="${contact.id}">
                                     <p class="group-card__contact-name">${contact.name}</p>
                                     <div class="group-card__right-side">
@@ -505,15 +491,43 @@ export class ContactsApp {
                                     </div>
                                 </li>
                             `,
-                                          )
-                                          .join("")
-                                    : '<li class="group-card__empty">В этой группе пока нет контактов</li>'
-                            }
+                                )
+                                .join("")}
                         </ul>
                     </li>
                 `;
             })
             .join("");
+
+        // Render ungrouped contacts separately
+        const ungroupedHtml =
+            ungroupedContacts.length > 0
+                ? `
+                    <li class="contacts__ungrouped">
+                        <h2 class="contacts__ungrouped-title">Без группы</h2>
+                        <ul class="contacts__ungrouped-list">
+                            ${ungroupedContacts
+                                .map(
+                                    (contact) => `
+                                <li class="contacts__ungrouped-contact" data-contact-id="${contact.id}">
+                                    <p class="contacts__ungrouped-contact-name">${contact.name}</p>
+                                    <div class="contacts__ungrouped-right-side">
+                                        <p class="contacts__ungrouped-contact-phone">${contact.phone}</p>
+                                        <div class="contacts__ungrouped-actions">
+                                            <button class="contacts__ungrouped-action contacts__ungrouped-action--edit" type="button" data-contact-action="edit" data-contact-id="${contact.id}" aria-label="Изменить контакт"></button>
+                                            <button class="contacts__ungrouped-action contacts__ungrouped-action--delete" type="button" data-contact-action="delete" data-contact-id="${contact.id}" aria-label="Удалить контакт"></button>
+                                        </div>
+                                    </div>
+                                </li>
+                            `,
+                                )
+                                .join("")}
+                        </ul>
+                    </li>
+                `
+                : "";
+
+        this.contactsListElement.innerHTML = groupsHtml + ungroupedHtml;
 
         this.emptyStateElement.classList.toggle(
             "contacts__empty--hidden",
