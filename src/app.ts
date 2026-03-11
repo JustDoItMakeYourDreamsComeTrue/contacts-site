@@ -451,6 +451,9 @@ export class ContactsApp {
                 (contact) => contact.groupId === group.id,
             ),
         }));
+        const groupedCardsWithContacts = groupedCards.filter(
+            (group) => group.contacts.length > 0,
+        );
         const ungroupedContacts = contacts.filter(
             (contact) =>
                 !contact.groupId ||
@@ -459,14 +462,14 @@ export class ContactsApp {
         const groupsForRender =
             ungroupedContacts.length > 0
                 ? [
-                      ...groupedCards,
+                      ...groupedCardsWithContacts,
                       {
                           id: "__ungrouped__",
                           name: "Без группы",
                           contacts: ungroupedContacts,
                       },
                   ]
-                : groupedCards;
+                : groupedCardsWithContacts;
 
         this.dropdown.dataItems = groups.map((group) => ({
             id: group.id,
